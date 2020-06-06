@@ -38,4 +38,9 @@
 <!--        <server name="APP_ROUTES_CACHE" value="bootstrap/cache/routes.phpunit.php"/>-->
 <!--        <server name="APP_EVENTS_CACHE" value="bootstrap/cache/events.phpunit.php"/>-->
     </php>
+    <logging>
+        <log type="coverage-html" target="tests/reports/report" lowUpperBound="20" highLowerBound="65"/>
+        <log type="coverage-clover" target="tests/reports/coverage.xml"/>
+        <log type="testdox-html" target="tests/reports/testdox.html"/>
+    </logging>
 </phpunit>
