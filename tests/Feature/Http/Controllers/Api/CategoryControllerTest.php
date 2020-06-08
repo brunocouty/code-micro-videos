@@ -5,13 +5,14 @@ namespace Tests\Feature\Http\Controllers\Api;
 use App\Models\Category;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\TestResponse;
+use Tests\Feature\Traits\TestValidations;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class CategoryControllerTest extends TestCase
 {
-    use DatabaseMigrations;
+    use DatabaseMigrations, TestValidations;
 
     /**
      * @link /api/category/index
@@ -151,29 +152,31 @@ class CategoryControllerTest extends TestCase
 
     public function assertInvalidationRequired(TestResponse $response): void
     {
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors(['name'])
-            ->assertJsonMissingValidationErrors(['is_active']);
+        $this->assertInvalidationFields(
+            $response,
+            ['name'],
+            'required'
+        );
+        $response->assertJsonMissingValidationErrors(['is_active']);
     }
 
     public function assertInvalidationBoolean(TestResponse $response): void
     {
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors(['name'])
-            ->assertJsonFragment([
-                \Lang::get('validation.max.string', ['attribute' => 'name', 'max' => 255])
-            ])
-            ->assertJsonFragment([
-                \Lang::get('validation.boolean', ['attribute' => 'is active'])
-            ]);
+        $this->assertInvalidationFields(
+            $response,
+            ['name'],
+            'max.string',
+            ['max' => 255]
+        );
+        $this->assertInvalidationFields(
+            $response,
+            ['is_active'],
+            'boolean'
+        );
     }
 
     public function assertInvalidationMax(TestResponse $response): void
     {
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors(['name'])
-            ->assertJsonFragment([
-                \Lang::get('validation.max.string', ['attribute' => 'name', 'max' => 255])
-            ]);
+        $this->assertInvalidationFields($response,['name'], 'max.string', ['max' => 255]);
     }
 }
