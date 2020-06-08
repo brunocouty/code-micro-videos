@@ -126,6 +126,27 @@ class CategoryControllerTest extends TestCase
         $this->assertTrue($response->json('is_active'));
     }
 
+    public function testDestroy(): void
+    {
+        $category = factory(Category::class)->create();
+        $response = $this->json(
+            'GET',
+            route('api.categories.show', ['category' => $category->id])
+        );
+        $response->assertStatus(200);
+        $response = $this->json(
+            'DELETE',
+            route('api.categories.destroy', ['category' => $category->id])
+        );
+        $response->assertStatus(204);
+        $response = $this->json(
+            'GET',
+            route('api.categories.show', ['category' => $category->id])
+        );
+        $response->assertStatus(404);
+        $this->assertNotNull(Category::withTrashed()->find(($category->id)));
+    }
+
     # Métodos auxiliares para as validações
 
     public function assertInvalidationRequired(TestResponse $response): void
